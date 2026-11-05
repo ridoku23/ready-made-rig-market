@@ -32,7 +32,7 @@ function Index() {
             <Link to="/citas" className="rounded-full border px-6 py-3 font-semibold hover:bg-secondary">Agendar cita</Link>
           </div>
         </div>
-        <img src={setup} alt="PC gamer NEXUS con periféricos RGB" className="glow-card w-full" width={780} height={510} />
+        <img src={setup} alt="PC gamer NEXUS con periféricos RGB" className="glow-card w-full" width={720} height={500} />
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
