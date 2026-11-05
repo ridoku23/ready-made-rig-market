@@ -4,9 +4,11 @@ import logo from "@/assets/nexus-logo.jpg";
 import { useCart, waLink } from "@/lib/shop";
 
 const nav = [
+  { to: "/catalogo", label: "Tienda" },
+  { to: "/arma-tu-pc", label: "Arma tu PC" },
   { to: "/servicios", label: "Servicios" },
-  { to: "/catalogo", label: "Catálogo" },
-  { to: "/citas", label: "Citas y ensambles" },
+  { to: "/citas", label: "Citas" },
+  { to: "/contacto", label: "Contacto" },
 ] as const;
 
 export function Header() {
@@ -27,7 +29,7 @@ export function Header() {
           {count > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1.5 text-xs">{count}</span>}
         </Link>
       </div>
-      <nav className="flex justify-center gap-4 pb-2 text-xs md:hidden">
+      <nav className="flex justify-center gap-3 overflow-x-auto px-2 pb-2 text-xs md:hidden">
         {nav.map((n) => <Link key={n.to} to={n.to} className="text-muted-foreground" activeProps={{ className: "text-accent" }}>{n.label}</Link>)}
       </nav>
     </header>

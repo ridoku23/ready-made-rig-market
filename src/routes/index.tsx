@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldCheck, Truck, CreditCard } from "lucide-react";
 import setup from "@/assets/nexus-setup.jpg";
 import { SERVICES } from "./servicios";
+import { PRODUCTS, cop } from "@/lib/shop";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,6 +28,7 @@ function Index() {
           <p className="mt-5 text-lg text-muted-foreground">Servicio confiable y atención cercana: reparamos, ensamblamos y vendemos computadores y componentes.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/catalogo" className="btn-brand rounded-full px-6 py-3 font-semibold">Ver catálogo</Link>
+            <Link to="/arma-tu-pc" className="rounded-full border px-6 py-3 font-semibold hover:bg-secondary">Arma tu PC</Link>
             <Link to="/citas" className="rounded-full border px-6 py-3 font-semibold hover:bg-secondary">Agendar cita</Link>
           </div>
         </div>
@@ -43,6 +45,18 @@ function Index() {
             </div>
           );
         })}
+      </section>
+
+      <section className="mt-16">
+        <div className="flex items-end justify-between"><h2 className="text-2xl font-bold">Productos destacados</h2><Link to="/catalogo" className="text-sm text-accent">Ver todo →</Link></div>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PRODUCTS.slice(0, 4).map((p) => (
+            <Link key={p.id} to="/catalogo" className="glow-card overflow-hidden transition hover:-translate-y-1">
+              <img src={p.image} alt={p.name} loading="lazy" width={816} height={816} className="aspect-square w-full object-cover" />
+              <div className="p-4"><p className="font-semibold">{p.name}</p><p className="text-accent">{cop(p.price)}</p></div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="mt-16">

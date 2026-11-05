@@ -19,12 +19,14 @@ const CATS = ["Todos", "PC ensamblados", "Componentes", "Accesorios"];
 
 function Catalogo() {
   const [cat, setCat] = useState("Todos");
+  const [q, setQ] = useState("");
   const { add } = useCart();
-  const list = PRODUCTS.filter((p) => cat === "Todos" || p.category === cat);
+  const list = PRODUCTS.filter((p) => (cat === "Todos" || p.category === cat) && p.name.toLowerCase().includes(q.toLowerCase()));
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="text-3xl font-bold">Catálogo y <span className="text-gradient">ventas</span></h1>
-      <div className="mt-6 flex flex-wrap gap-2">
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar productos..." className="mt-6 w-full rounded-full border bg-input/20 px-5 py-3 outline-none focus:ring-2 focus:ring-ring" />
+      <div className="mt-4 flex flex-wrap gap-2">
         {CATS.map((c) => (
           <button key={c} onClick={() => setCat(c)} className={`rounded-full border px-4 py-1.5 text-sm ${cat === c ? "btn-brand" : "hover:bg-secondary"}`}>{c}</button>
         ))}
