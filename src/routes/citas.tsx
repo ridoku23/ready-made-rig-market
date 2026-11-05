@@ -18,7 +18,7 @@ export const Route = createFileRoute("/citas")({
 const field = "mt-1 w-full rounded-lg border bg-input/20 px-3 py-2 outline-none focus:ring-2 focus:ring-ring";
 
 function Citas() {
-  const [service, setService] = useState(SERVICES[0].title);
+  const [service, setService] = useState(SERVICES[0]!.title);
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);

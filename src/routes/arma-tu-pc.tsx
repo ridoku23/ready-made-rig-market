@@ -16,9 +16,9 @@ export const Route = createFileRoute("/arma-tu-pc")({
 
 function Builder() {
   const [sel, setSel] = useState<number[]>(BUILDER.map(() => 0));
-  const parts = BUILDER.map((b, i) => b.options[sel[i]]);
+  const parts = BUILDER.map((b, i) => b.options[sel[i] ?? 0]!);
   const total = parts.reduce((s, p) => s + p.price, 0) + ASSEMBLY_FEE;
-  const msg = `Hola NEXUS, quiero cotizar este PC a medida:\n${BUILDER.map((b, i) => `• ${b.step}: ${parts[i].name}`).join("\n")}\nTotal estimado (con ensamble): ${cop(total)}`;
+  const msg = `Hola NEXUS, quiero cotizar este PC a medida:\n${BUILDER.map((b, i) => `• ${b.step}: ${parts[i]!.name}`).join("\n")}\nTotal estimado (con ensamble): ${cop(total)}`;
   return (
     <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 lg:grid-cols-[1.5fr_1fr]">
       <div>
