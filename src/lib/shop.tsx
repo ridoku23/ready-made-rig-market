@@ -1,25 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import pc from "@/assets/p-pc-gamer.jpg";
-import gpu from "@/assets/p-gpu.jpg";
-import peri from "@/assets/p-perifericos.jpg";
-import comp from "@/assets/p-componentes.jpg";
 
 export const WHATSAPP = "573016000986";
 export const waLink = (text: string) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
-export type Product = { id: string; name: string; category: string; price: number; image: string; desc: string };
-
-export const PRODUCTS: Product[] = [
-  { id: "pc-gamer-pro", name: "PC Gamer Pro", category: "PC ensamblados", price: 5200000, image: pc, desc: "Ryzen 7, RTX, 32GB RAM, SSD 1TB" },
-  { id: "pc-oficina", name: "PC Oficina", category: "PC ensamblados", price: 1900000, image: pc, desc: "Intel Core i5, 16GB RAM, SSD 512GB" },
-  { id: "gpu-rtx", name: "Tarjeta gráfica RTX", category: "Componentes", price: 2400000, image: gpu, desc: "Triple ventilador, 12GB" },
-  { id: "kit-ram-ssd", name: "Kit RAM DDR5 + SSD NVMe", category: "Componentes", price: 890000, image: comp, desc: "32GB DDR5 + SSD 1TB" },
-  { id: "combo-rgb", name: "Combo teclado + mouse RGB", category: "Accesorios", price: 280000, image: peri, desc: "Teclado mecánico y mouse gamer" },
-  { id: "pc-creador", name: "PC Creador de contenido", category: "PC ensamblados", price: 4100000, image: pc, desc: "Intel Core i7, RTX, 32GB RAM, SSD 2TB" },
-  { id: "ram-16", name: "Memoria RAM DDR5 16GB", category: "Componentes", price: 260000, image: comp, desc: "5600 MHz con disipador" },
-  { id: "ssd-1tb", name: "SSD NVMe 1TB", category: "Componentes", price: 320000, image: comp, desc: "Hasta 7000 MB/s" },
-  { id: "teclado-mec", name: "Teclado mecánico RGB", category: "Accesorios", price: 190000, image: peri, desc: "Switches rojos, español" },
-];
+export type CartProduct = { id: string; name: string; price: number; image: string };
 
 export type BuildPart = { name: string; price: number };
 export const BUILDER: { step: string; options: BuildPart[] }[] = [
@@ -35,23 +19,27 @@ export const ASSEMBLY_FEE = 120000;
 
 export const cop = (n: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
 
-type Item = { id: string; qty: number };
-type Ctx = { items: Item[]; add: (id: string) => void; setQty: (id: string, q: number) => void; clear: () => void; count: number; total: number };
+export type CartItem = CartProduct & { qty: number };
+type Ctx = { items: CartItem[]; add: (p: CartProduct) => void; setQty: (id: string, q: number) => void; clear: () => void; count: number; total: number };
 const CartCtx = createContext<Ctx | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<CartItem[]>([]);
   useEffect(() => {
-    try { setItems(JSON.parse(localStorage.getItem("nexus-cart") || "[]")); } catch { /* ignore */ }
+    try {
+      const raw = JSON.parse(localStorage.getItem("nexus-cart") || "[]") as CartItem[];
+      // Drop legacy entries saved before the cart stored full product data.
+      setItems(raw.filter((i) => i && typeof i.price === "number" && typeof i.name === "string"));
+    } catch { /* ignore */ }
   }, []);
-  const save = (next: Item[]) => { setItems(next); localStorage.setItem("nexus-cart", JSON.stringify(next)); };
-  const add = (id: string) => {
-    const f = items.find((i) => i.id === id);
-    save(f ? items.map((i) => (i.id === id ? { ...i, qty: i.qty + 1 } : i)) : [...items, { id, qty: 1 }]);
+  const save = (next: CartItem[]) => { setItems(next); localStorage.setItem("nexus-cart", JSON.stringify(next)); };
+  const add = (p: CartProduct) => {
+    const f = items.find((i) => i.id === p.id);
+    save(f ? items.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i)) : [...items, { ...p, qty: 1 }]);
   };
   const setQty = (id: string, q: number) => save(q <= 0 ? items.filter((i) => i.id !== id) : items.map((i) => (i.id === id ? { ...i, qty: q } : i)));
   const count = items.reduce((s, i) => s + i.qty, 0);
-  const total = items.reduce((s, i) => s + i.qty * (PRODUCTS.find((p) => p.id === i.id)?.price ?? 0), 0);
+  const total = items.reduce((s, i) => s + i.qty * i.price, 0);
   return <CartCtx.Provider value={{ items, add, setQty, clear: () => save([]), count, total }}>{children}</CartCtx.Provider>;
 }
 export const useCart = () => {

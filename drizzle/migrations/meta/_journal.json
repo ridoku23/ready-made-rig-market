@@ -8,6 +8,13 @@
       "when": 1793938546945,
       "tag": "0000_products_roles_orders",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793938622743,
+      "tag": "0001_bootstrap_first_admin",
+      "breakpoints": true
     }
   ]
 }
