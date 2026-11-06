@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { PRODUCTS, cop, useCart } from "@/lib/shop";
+import { cop, useCart } from "@/lib/shop";
+import { useProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/catalogo")({
   head: () => ({
@@ -21,7 +22,8 @@ function Catalogo() {
   const [cat, setCat] = useState("Todos");
   const [q, setQ] = useState("");
   const { add } = useCart();
-  const list = PRODUCTS.filter((p) => (cat === "Todos" || p.category === cat) && p.name.toLowerCase().includes(q.toLowerCase()));
+  const { data: products = [], isLoading } = useProducts();
+  const list = products.filter((p) => (cat === "Todos" || p.category === cat) && p.name.toLowerCase().includes(q.toLowerCase()));
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="text-3xl font-bold">Catálogo y <span className="text-gradient">ventas</span></h1>
@@ -31,6 +33,7 @@ function Catalogo() {
           <button key={c} onClick={() => setCat(c)} className={`rounded-full border px-4 py-1.5 text-sm ${cat === c ? "btn-brand" : "hover:bg-secondary"}`}>{c}</button>
         ))}
       </div>
+      {isLoading && <p className="mt-10 text-center text-muted-foreground">Cargando productos...</p>}
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((p) => (
           <div key={p.id} className="glow-card overflow-hidden">
@@ -41,12 +44,17 @@ function Catalogo() {
               <p className="text-sm text-muted-foreground">{p.desc}</p>
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-lg font-bold">{cop(p.price)}</span>
-                <button onClick={() => { add(p.id); toast.success(`${p.name} agregado al carrito`); }} className="btn-brand rounded-full px-4 py-2 text-sm font-semibold">Agregar</button>
+                {p.stock > 0 ? (
+                  <button onClick={() => { add({ id: p.id, name: p.name, price: p.price, image: p.image }); toast.success(`${p.name} agregado al carrito`); }} className="btn-brand rounded-full px-4 py-2 text-sm font-semibold">Agregar</button>
+                ) : (
+                  <span className="rounded-full border px-4 py-2 text-sm text-muted-foreground">Agotado</span>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
+      {!isLoading && list.length === 0 && <p className="mt-10 text-center text-muted-foreground">No encontramos productos con ese criterio.</p>}
     </div>
   );
 }
