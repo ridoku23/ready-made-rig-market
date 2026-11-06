@@ -10,21 +10,34 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ArmaTuPcRouteImport } from './routes/arma-tu-pc'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CarritoRouteImport } from './routes/carrito'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as CitasRouteImport } from './routes/citas'
 import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as ServiciosRouteImport } from './routes/servicios'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ApiPublicWompiWebhookRouteImport } from './routes/api/public/wompi/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArmaTuPcRoute = ArmaTuPcRouteImport.update({
   id: '/arma-tu-pc',
   path: '/arma-tu-pc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CarritoRoute = CarritoRouteImport.update({
@@ -52,73 +65,106 @@ const ServiciosRoute = ServiciosRouteImport.update({
   path: '/servicios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicWompiWebhookRoute = ApiPublicWompiWebhookRouteImport.update({
+  id: '/api/public/wompi/webhook',
+  path: '/api/public/wompi/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/arma-tu-pc': typeof ArmaTuPcRoute
+  '/auth': typeof AuthRoute
   '/carrito': typeof CarritoRoute
   '/catalogo': typeof CatalogoRoute
   '/citas': typeof CitasRoute
   '/contacto': typeof ContactoRoute
   '/servicios': typeof ServiciosRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/wompi/webhook': typeof ApiPublicWompiWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/arma-tu-pc': typeof ArmaTuPcRoute
+  '/auth': typeof AuthRoute
   '/carrito': typeof CarritoRoute
   '/catalogo': typeof CatalogoRoute
   '/citas': typeof CitasRoute
   '/contacto': typeof ContactoRoute
   '/servicios': typeof ServiciosRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/wompi/webhook': typeof ApiPublicWompiWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/arma-tu-pc': typeof ArmaTuPcRoute
+  '/auth': typeof AuthRoute
   '/carrito': typeof CarritoRoute
   '/catalogo': typeof CatalogoRoute
   '/citas': typeof CitasRoute
   '/contacto': typeof ContactoRoute
   '/servicios': typeof ServiciosRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/api/public/wompi/webhook': typeof ApiPublicWompiWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/arma-tu-pc'
+    | '/auth'
     | '/carrito'
     | '/catalogo'
     | '/citas'
     | '/contacto'
     | '/servicios'
+    | '/admin'
+    | '/api/public/wompi/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/arma-tu-pc'
+    | '/auth'
     | '/carrito'
     | '/catalogo'
     | '/citas'
     | '/contacto'
     | '/servicios'
+    | '/admin'
+    | '/api/public/wompi/webhook'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/arma-tu-pc'
+    | '/auth'
     | '/carrito'
     | '/catalogo'
     | '/citas'
     | '/contacto'
     | '/servicios'
+    | '/_authenticated/admin'
+    | '/api/public/wompi/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ArmaTuPcRoute: typeof ArmaTuPcRoute
+  AuthRoute: typeof AuthRoute
   CarritoRoute: typeof CarritoRoute
   CatalogoRoute: typeof CatalogoRoute
   CitasRoute: typeof CitasRoute
   ContactoRoute: typeof ContactoRoute
   ServiciosRoute: typeof ServiciosRoute
+  ApiPublicWompiWebhookRoute: typeof ApiPublicWompiWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -130,11 +176,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/arma-tu-pc': {
       id: '/arma-tu-pc'
       path: '/arma-tu-pc'
       fullPath: '/arma-tu-pc'
       preLoaderRoute: typeof ArmaTuPcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/carrito': {
@@ -172,17 +232,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServiciosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/wompi/webhook': {
+      id: '/api/public/wompi/webhook'
+      path: '/api/public/wompi/webhook'
+      fullPath: '/api/public/wompi/webhook'
+      preLoaderRoute: typeof ApiPublicWompiWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ArmaTuPcRoute: ArmaTuPcRoute,
+  AuthRoute: AuthRoute,
   CarritoRoute: CarritoRoute,
   CatalogoRoute: CatalogoRoute,
   CitasRoute: CitasRoute,
   ContactoRoute: ContactoRoute,
   ServiciosRoute: ServiciosRoute,
+  ApiPublicWompiWebhookRoute: ApiPublicWompiWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
