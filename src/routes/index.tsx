@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldCheck, Truck, CreditCard } from "lucide-react";
 import setup from "@/assets/nexus-setup.jpg";
 import { SERVICES } from "./servicios";
-import { PRODUCTS, cop } from "@/lib/shop";
+import { cop } from "@/lib/shop";
+import { useProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { data: products = [] } = useProducts();
   return (
     <div className="mx-auto max-w-6xl px-4">
       <section className="grid items-center gap-10 py-14 md:grid-cols-2">
@@ -36,7 +38,7 @@ function Index() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        {[[ShieldCheck, "Servicio confiable", "Garantía y atención cercana"], [Truck, "Envíos nacionales", "A todo Colombia"], [CreditCard, "Todos los pagos", "Efectivo, transferencia y Wompi"]].map(([I, t, d]) => {
+        {[[ShieldCheck, "Servicio confiable", "Garantía y atención cercana"], [Truck, "Envíos nacionales", "A todo Colombia"], [CreditCard, "Todos los pagos", "Efectivo, transferencia y tarjeta"]].map(([I, t, d]) => {
           const Icon = I as typeof ShieldCheck;
           return (
             <div key={t as string} className="glow-card flex items-center gap-4 p-5">
@@ -50,7 +52,7 @@ function Index() {
       <section className="mt-16">
         <div className="flex items-end justify-between"><h2 className="text-2xl font-bold">Productos destacados</h2><Link to="/catalogo" className="text-sm text-accent">Ver todo →</Link></div>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {PRODUCTS.slice(0, 4).map((p) => (
+          {products.slice(0, 4).map((p) => (
             <Link key={p.id} to="/catalogo" className="glow-card overflow-hidden transition hover:-translate-y-1">
               <img src={p.image} alt={p.name} loading="lazy" width={816} height={816} className="aspect-square w-full object-cover" />
               <div className="p-4"><p className="font-semibold">{p.name}</p><p className="text-accent">{cop(p.price)}</p></div>

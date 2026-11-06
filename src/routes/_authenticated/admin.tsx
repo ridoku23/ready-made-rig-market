@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Panel de administración · NEXUS Tecnología" },
-      { name: "description", content: "Gestión de inventario, precios, fotos y pedidos de NEXUS." },
+      { name: "description", content: "Gestión de inventario, precios y fotos de NEXUS." },
     ],
   }),
   component: Admin,
@@ -26,16 +26,6 @@ type Row = {
   stock: number;
   image_url: string | null;
   active: boolean;
-};
-
-type Order = {
-  id: string;
-  reference: string;
-  customer_name: string;
-  customer_phone: string;
-  total: number;
-  status: string;
-  created_at: string;
 };
 
 const CATS = ["PC ensamblados", "Componentes", "Accesorios"];
@@ -71,20 +61,9 @@ function Admin() {
     },
   });
 
-  const orders = useQuery({
-    queryKey: ["admin-orders"],
-    enabled: isAdmin === true,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("orders").select("id, reference, customer_name, customer_phone, total, status, created_at").order("created_at", { ascending: false }).limit(50);
-      if (error) throw error;
-      return (data ?? []) as Order[];
-    },
-  });
-
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin-products"] });
     qc.invalidateQueries({ queryKey: ["products"] });
-    qc.invalidateQueries({ queryKey: ["admin-orders"] });
   };
 
   const onPickFile = (e: ChangeEvent<HTMLInputElement>) => setFile(e.target.files?.[0] ?? null);
@@ -188,19 +167,6 @@ function Admin() {
           </div>
         ))}
         {products.data?.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">Aún no hay productos. Crea el primero con “Nuevo producto”.</p>}
-      </div>
-
-      <h2 className="mt-10 text-xl font-bold">Pedidos recientes</h2>
-      <div className="glow-card mt-4 divide-y">
-        {(orders.data ?? []).map((o) => (
-          <div key={o.id} className="flex flex-wrap items-center gap-3 p-4 text-sm">
-            <span className="font-mono text-xs">{o.reference}</span>
-            <span className="flex-1">{o.customer_name} · {o.customer_phone}</span>
-            <span className="font-semibold">{cop(o.total)}</span>
-            <span className={`rounded-full border px-3 py-1 text-xs ${o.status === "approved" ? "btn-brand" : ""}`}>{o.status}</span>
-          </div>
-        ))}
-        {orders.data?.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">Aún no hay pedidos en línea.</p>}
       </div>
     </div>
   );

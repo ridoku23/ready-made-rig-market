@@ -1,17 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { Minus, Plus } from "lucide-react";
-import { toast } from "sonner";
 import { cop, useCart, waLink } from "@/lib/shop";
-import { createWompiCheckout } from "@/lib/wompi.functions";
 
 export const Route = createFileRoute("/carrito")({
   head: () => ({
     meta: [
-      { title: "Carrito y pago · NEXUS Tecnología" },
-      { name: "description", content: "Finaliza tu compra: pago en tienda o virtual y envío a todo Colombia." },
+      { title: "Carrito y pedido · NEXUS Tecnología" },
+      { name: "description", content: "Arma tu pedido y envíalo por WhatsApp: recogida en tienda o envío a todo Colombia." },
       { property: "og:title", content: "Carrito · NEXUS" },
-      { property: "og:description", content: "Finaliza tu compra en NEXUS Tecnología." },
+      { property: "og:description", content: "Haz tu pedido en NEXUS Tecnología." },
     ],
   }),
   component: Carrito,
@@ -20,67 +18,24 @@ export const Route = createFileRoute("/carrito")({
 const field = "mt-1 w-full rounded-lg border bg-input/20 px-3 py-2 outline-none focus:ring-2 focus:ring-ring";
 const PAY = {
   sitio: ["Efectivo", "Transferencia"],
-  virtual: ["Transferencia", "Tarjeta (Wompi)"],
+  virtual: ["Transferencia", "Tarjeta / PSE (link de pago)"],
 } as const;
-
-declare global {
-  interface Window { WidgetCheckout?: new (config: Record<string, unknown>) => { open: (cb?: (r: unknown) => void) => void } }
-}
-
-async function loadWompiWidget() {
-  if (window.WidgetCheckout) return;
-  await new Promise<void>((res, rej) => {
-    const s = document.createElement("script");
-    s.src = "https://checkout.wompi.co/widget.js";
-    s.onload = () => res();
-    s.onerror = () => rej(new Error("No se pudo cargar la pasarela de pago"));
-    document.head.appendChild(s);
-  });
-}
 
 function Carrito() {
   const { items, setQty, total, clear } = useCart();
   const [mode, setMode] = useState<"sitio" | "virtual">("virtual");
   const [pay, setPay] = useState<string>(PAY.virtual[0]);
-  const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const g = (k: string) => String(f.get(k) || "");
-
-    if (mode === "virtual" && pay === "Tarjeta (Wompi)") {
-      setBusy(true);
-      try {
-        const res = await createWompiCheckout({
-          data: {
-            items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
-            customer: { name: g("name"), phone: g("phone"), email: g("email") },
-          },
-        });
-        await loadWompiWidget();
-        const checkout = new window.WidgetCheckout!({
-          currency: "COP",
-          amountInCents: res.amountInCents,
-          reference: res.reference,
-          publicKey: res.publicKey,
-          signature: { integrity: res.signature },
-          redirectUrl: `${window.location.origin}/carrito`,
-        });
-        checkout.open();
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "No se pudo iniciar el pago");
-      } finally {
-        setBusy(false);
-      }
-      return;
-    }
 
     const lines = items.map((i) => `• ${i.qty} x ${i.name} (${cop(i.price * i.qty)})`).join("\n");
     const ship = mode === "virtual"
       ? `Envío a: ${g("address")}, ${g("city")}, ${g("dept")}\nIndicaciones: ${g("ref")}`
       : "Recoge en tienda";
-    const msg = `Hola NEXUS, quiero hacer este pedido:\n${lines}\nTotal: ${cop(total)}\n\nCompra: ${mode === "sitio" ? "En tienda" : "Virtual con envío nacional"}\nPago: ${pay}\n\nNombre: ${g("name")}\nCédula/NIT: ${g("doc")}\nTeléfono: ${g("phone")}\nCorreo: ${g("email")}\n${ship}`;
+    const msg = `Hola NEXUS, quiero hacer este pedido:\n${lines}\nTotal productos: ${cop(total)}\n\nCompra: ${mode === "sitio" ? "En tienda" : "Virtual con envío nacional"}\nPago: ${pay}\n\nNombre: ${g("name")}\nCédula/NIT: ${g("doc")}\nTeléfono: ${g("phone")}\nCorreo: ${g("email")}\n${ship}`;
     window.open(waLink(msg), "_blank");
     clear();
   };
@@ -107,8 +62,9 @@ function Carrito() {
               <button aria-label="Agregar uno" onClick={() => setQty(i.id, i.qty + 1)} className="rounded border p-1"><Plus className="h-4 w-4" /></button>
             </div>
           ))}
-          <div className="flex justify-between p-4 text-lg font-bold"><span>Total</span><span>{cop(total)}</span></div>
+          <div className="flex justify-between p-4 text-lg font-bold"><span>Total productos</span><span>{cop(total)}</span></div>
         </div>
+        <p className="mt-3 text-xs text-muted-foreground">El costo del envío no está incluido: te lo confirmamos por WhatsApp.</p>
       </div>
 
       <form onSubmit={onSubmit} className="glow-card grid gap-4 p-6 sm:grid-cols-2">
@@ -143,13 +99,11 @@ function Carrito() {
           </>
         )}
         <p className="sm:col-span-2 text-xs text-muted-foreground">
-          {pay === "Tarjeta (Wompi)"
-            ? "Al confirmar se abrirá la ventana segura de Wompi para pagar con tarjeta, PSE o Nequi."
-            : "Te enviaremos por WhatsApp los datos de transferencia para confirmar tu pedido."}
+          {pay.startsWith("Tarjeta")
+            ? "Te escribiremos por WhatsApp con el costo del envío y el link de pago para tarjeta o PSE."
+            : "Te escribiremos por WhatsApp con el costo del envío y los datos para confirmar tu pedido."}
         </p>
-        <button disabled={busy} className="btn-brand sm:col-span-2 rounded-full py-3 font-semibold disabled:opacity-60">
-          {busy ? "Preparando pago..." : pay === "Tarjeta (Wompi)" ? "Pagar con Wompi" : "Confirmar pedido por WhatsApp"}
-        </button>
+        <button className="btn-brand sm:col-span-2 rounded-full py-3 font-semibold">Enviar pedido por WhatsApp</button>
       </form>
     </div>
   );

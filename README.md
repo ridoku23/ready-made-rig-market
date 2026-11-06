@@ -1,24 +1,35 @@
-# Ready Made Rig Market
+# NEXUS Tecnología
 
-esta es mi empresesa nesecito ofrcer estos servicios tener caalogo y si es nesesario par separa citas y ensablados generar un boton de contacto ademas si es para crompar componen tes o pc ya ensablad tenga su sector de ventas y pagos acepto todo tip de pagos si es en sitio es efetivo y tranferencia ,si es vortial tranferencia y tajeta , envios a nivel nacional ya sabes que datos pedrir hasme mi pagina wed y repeta la apleta de colores
+Tienda y servicio técnico de computadores: catálogo, carrito, envíos nacionales, citas, "Arma tu PC", contacto y panel de administración.
 
-This project was built with [Lovable](https://lovable.dev).
+**Cómo funcionan los pedidos:** el cliente arma su carrito, llena sus datos y el pedido completo (productos, total, datos de envío y forma de pago) llega al WhatsApp del negocio. El costo del envío y el link de pago (Bold, Wompi u otro) se envían de forma manual por WhatsApp.
 
-## Build with Lovable
+Stack: TanStack Start (React 19) · Supabase · Tailwind 4 · Nitro.
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/90e9b02d-164d-478f-a7dc-84037b244c8f).
+## Despliegue en Vercel
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+1. Importa este repositorio en Vercel (**Add New → Project**). Detecta todo solo (usa `bun.lock`).
+2. Este repo ya incluye `.env` con las claves públicas de Supabase, así que Vercel puede compilar sin configurar nada. Si prefieres definirlas en **Settings → Environment Variables**, estas son (ver `.env.example`):
 
-## Development
+| Variable | Para qué sirve |
+| --- | --- |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID` | Navegador (se incrustan al compilar) |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PROJECT_ID` | Servidor / SSR |
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+3. Pulsa **Deploy**. Si cambias una variable `VITE_*`, haz **Redeploy** (se leen al compilar).
+
+El proyecto fija `nitro: { preset: "vercel" }` en `vite.config.ts`, así `vite build` genera `.vercel/output`. Dentro de Lovable ese ajuste se ignora, por lo que ambos entornos siguen funcionando.
+
+El número de WhatsApp está en `src/lib/shop.tsx` (constante `WHATSAPP`).
+
+## Desarrollo local
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+cp .env.example .env   # y completa los valores
+bun install            # o: npm i --legacy-peer-deps
+bun run dev
 ```
+
+## Lovable
+
+Este proyecto sigue conectado con [Lovable](https://lovable.dev/projects/90e9b02d-164d-478f-a7dc-84037b244c8f). Los cambios que se suban a `main` en GitHub se sincronizan con el editor.

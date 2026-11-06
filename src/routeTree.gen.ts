@@ -19,7 +19,6 @@ import { Route as CitasRouteImport } from './routes/citas'
 import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as ServiciosRouteImport } from './routes/servicios'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as ApiPublicWompiWebhookRouteImport } from './routes/api/public/wompi/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,11 +69,6 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiPublicWompiWebhookRoute = ApiPublicWompiWebhookRouteImport.update({
-  id: '/api/public/wompi/webhook',
-  path: '/api/public/wompi/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,7 +80,6 @@ export interface FileRoutesByFullPath {
   '/contacto': typeof ContactoRoute
   '/servicios': typeof ServiciosRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/api/public/wompi/webhook': typeof ApiPublicWompiWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,7 +91,6 @@ export interface FileRoutesByTo {
   '/contacto': typeof ContactoRoute
   '/servicios': typeof ServiciosRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/api/public/wompi/webhook': typeof ApiPublicWompiWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,7 +104,6 @@ export interface FileRoutesById {
   '/contacto': typeof ContactoRoute
   '/servicios': typeof ServiciosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/api/public/wompi/webhook': typeof ApiPublicWompiWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,7 +117,6 @@ export interface FileRouteTypes {
     | '/contacto'
     | '/servicios'
     | '/admin'
-    | '/api/public/wompi/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/contacto'
     | '/servicios'
     | '/admin'
-    | '/api/public/wompi/webhook'
   id:
     | '__root__'
     | '/'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/contacto'
     | '/servicios'
     | '/_authenticated/admin'
-    | '/api/public/wompi/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -164,7 +152,6 @@ export interface RootRouteChildren {
   CitasRoute: typeof CitasRoute
   ContactoRoute: typeof ContactoRoute
   ServiciosRoute: typeof ServiciosRoute
-  ApiPublicWompiWebhookRoute: typeof ApiPublicWompiWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -239,13 +226,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/wompi/webhook': {
-      id: '/api/public/wompi/webhook'
-      path: '/api/public/wompi/webhook'
-      fullPath: '/api/public/wompi/webhook'
-      preLoaderRoute: typeof ApiPublicWompiWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -270,7 +250,6 @@ const rootRouteChildren: RootRouteChildren = {
   CitasRoute: CitasRoute,
   ContactoRoute: ContactoRoute,
   ServiciosRoute: ServiciosRoute,
-  ApiPublicWompiWebhookRoute: ApiPublicWompiWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

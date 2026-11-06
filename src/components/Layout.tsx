@@ -40,7 +40,7 @@ export function Footer() {
   return (
     <footer className="mt-20 border-t py-10 text-center text-sm text-muted-foreground">
       <p className="font-display tracking-[0.4em] text-foreground">TU ALIADO EN TECNOLOGÍA</p>
-      <p className="mt-3">WhatsApp 301 600 0986 · Envíos a todo Colombia · Efectivo, transferencia y tarjeta (Wompi)</p>
+      <p className="mt-3">WhatsApp 301 600 0986 · Envíos a todo Colombia · Efectivo, transferencia y tarjeta</p>
     </footer>
   );
 }
